@@ -1,0 +1,12 @@
+{
+  "name": "WorkLog",
+  "short_name": "WorkLog",
+  "start_url": "./index.html?v=20260214155642",
+  "display": "standalone",
+  "background_color": "#E5E5E5",
+  "theme_color": "#E5E5E5",
+  "icons": [
+    { "src": "icons/worklog-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable any" },
+    { "src": "icons/worklog-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable any" }
+  ]
+}

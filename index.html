@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="lv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WorkLog</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json?v=20260214155650">
+  <meta name="theme-color" content="#E5E5E5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#2B2B2B" media="(prefers-color-scheme: dark)">
+
+  <!-- iOS standalone -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="WorkLog">
+  <link rel="apple-touch-icon" href="./icons/worklog-192.png">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="./style.css?v=20260214155650" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>WorkLog</h1>
+    <nav class="tabs">
+      <button class="tab active" data-tab="week">Šonedēļ</button>
+      <button class="tab" data-tab="month">Mēnesis</button>
+      <button class="tab" data-tab="settings">Iestatījumi</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Ātrā ievade -->
+    <section class="card">
+      <h2>Ātrā ievade</h2>
+      <form id="quickForm">
+        <div class="grid">
+          <label>
+            Datums
+            <input type="date" id="dateInput" required />
+          </label>
+          <label>
+            Stundas
+            <input type="text" id="hoursInput" inputmode="decimal" placeholder="piem., 8 vai 7,5" required />
+          </label>
+          <label class="full">
+            Aktivitāte (pēc izvēles)
+            <input type="text" id="activityInput" placeholder="piem., skice, montāža..." />
+          </label>
+        </div>
+        <div class="actions">
+          <button type="submit" class="primary">Pievienot</button>
+          <button type="button" id="add8h" class="ghost">Pievienot 8h šodien</button>
+        </div>
+        <div id="saveToast" class="toast" hidden>Saglabāts</div>
+      </form>
+    </section>
+
+    <!-- Nedēļa -->
+    <section id="weekTab" class="tabpanel active">
+      <div class="card">
+        <div class="bar">
+          <button id="prevWeek" class="navbtn">← Iepriekšējā</button>
+          <div><strong>Nedēļa</strong> <span id="weekRange">—</span></div>
+          <button id="nextWeek" class="navbtn">Nākamā →</button>
+        </div>
+
+        <div class="summary">
+          <div class="chip">
+            <div class="chip-label">Stundas (kopā)</div>
+            <div class="chip-value" id="wHours">0</div>
+          </div>
+          <div class="chip">
+            <div class="chip-label">Obligātās</div>
+            <div class="chip-value chip-gray" id="wNormal">0</div>
+          </div>
+          <div class="chip">
+            <div class="chip-label">Virsstundas</div>
+            <div class="chip-value chip-orange" id="wOver">0</div>
+          </div>
+          <div class="chip">
+            <div class="chip-label">Summa (bruto)</div>
+            <div class="chip-value" id="wAmount">€0,00</div>
+          </div>
+        </div>
+
+        <div class="legend">
+          <span class="legend-item"><span class="swatch blue"></span>Darba diena &lt; 8h</span>
+          <span class="legend-item"><span class="swatch green"></span>Darba diena = 8h</span>
+          <span class="legend-item"><span class="swatch orange"></span>Darba diena &gt; 8h / Brīvdiena/ svētki &gt; 0h</span>
+          <span class="legend-item"><span class="swatch gray"></span>0h</span>
+          <span class="legend-item"><span class="swatch holiday"></span>LV svētki</span>
+        </div>
+
+        <div id="weekDays" class="daylist"></div>
+      </div>
+    </section>
+
+    <!-- Mēnesis -->
+    <section id="monthTab" class="tabpanel">
+      <div class="card">
+        <div class="bar">
+          <button id="prevMonth" class="navbtn">← Iepriekšējais</button>
+          <div><strong>Mēnesis</strong> <span id="monthTitle">—</span></div>
+          <button id="nextMonth" class="navbtn">Nākamais →</button>
+        </div>
+
+        <div class="summary month-summary">
+         <div class="month-grid-2x2"> 
+          <div class="chip">
+            <div class="chip-label">Darba dienas (mēnesī)</div>
+            <div class="chip-value" id="mWorkdays">0</div>
+          </div>
+          <div class="chip">
+            <div class="chip-label">Stundas</div>
+            <div class="chip-value" id="mRequired">0</div>
+          </div>
+          <div class="chip">
+            <div class="chip-label">Atlikušās darba dienas</div>
+            <div class="chip-value" id="mRemainingDays">0</div>
+          </div>
+          <div class="chip">
+            <div class="chip-label">Atlikušās stundas</div>
+            <div class="chip-value" id="mRemainingHours">0</div>
+          </div>
+          </div>
+          <div class="chip">
+            <div class="chip-label">Nostrādātās obligātās</div>
+            <div class="chip-value chip-gray" id="mNormalHours">0</div>
+          </div>
+          <div class="chip">
+            <div class="chip-label">Nostrādātās virsstundas</div>
+            <div class="chip-value chip-orange" id="mOverHours">0</div>
+          </div>
+          <div class="chip">
+            <div class="chip-label">Nostrādātās kopā</div>
+            <div class="chip-value" id="mTotalHours">0</div>
+          </div>
+          <div class="chip">
+            <div class="chip-label">Bruto (mēnesis)</div>
+            <div class="chip-value" id="mAmount">€0,00</div>
+          </div>
+        </div>
+
+        <div id="monthList" class="monthlist"></div>
+      </div>
+    </section>
+
+    <!-- Iestatījumi -->
+    <section id="settingsTab" class="tabpanel">
+      <div class="card">
+        <h2>Iestatījumi</h2>
+        <form id="settingsForm">
+          <div class="grid">
+            <label>
+              Noklusējuma likme (€ / h)
+              <input type="text" id="rateDefault" inputmode="decimal" placeholder="piem., 7,95" />
+            </label>
+            <label>
+              Virsstundu likme (€ / h)
+              <input type="text" id="rateOver" inputmode="decimal" placeholder="piem., 11,00" />
+            </label>
+            <label>
+              Brīvdienu/svētku likme (€ / h)
+              <input type="text" id="rateWeekend" inputmode="decimal" placeholder="ja tukšs → virsstundu likme" />
+            </label>
+            <label>
+              Virsstundu slieksnis (h / dienā)
+              <input type="text" id="overtimeThreshold" inputmode="decimal" placeholder="8" />
+            </label>
+          </div>
+          <div class="actions">
+            <button type="submit" class="primary">Saglabāt iestatījumus</button>
+          </div>
+          <p class="muted">
+            Sestdienās/svētdienās un LV svētku dienās visas stundas tiek skaitītas kā virsstundas. Likme: ja brīvdienu/svētku likme nav norādīta, tiek lietota virsstundu likme.
+          </p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><small>Viss tiek glabāts tikai tavā ierīcē (localStorage). Nav serveru.</small></footer>
+  <footer style="opacity:.4;font-size:12px;text-align:center">
+    versija: 2026-02-15
+  </footer>
+  <script src="./worklog.js?v=20260214155642"></script>
+  <!-- <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./service-worker.js?v=20260214155650')
+        .catch(err => console.error('SW error:', err));
+    }
+  </script> -->
+</body>
+</html>
