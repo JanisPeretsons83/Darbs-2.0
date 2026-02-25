@@ -144,23 +144,34 @@ function render(monthStr){
 }
 
 // Ja izmanto manu drukas moduli ar <input type="month" id="monthInput"> un <button id="printBtn">
+
 function init(){
   const mi = document.getElementById('monthInput');
-  if(mi){
+
+  // Ja URL ir ?month=YYYY-MM, ņem to, citādi – šodienas mēnesi
+  const params = new URLSearchParams(location.search);
+  const monthParam = params.get('month');
+
+  let monthStr;
+  if (monthParam && /^\d{4}-\d{2}$/.test(monthParam)) {
+    monthStr = monthParam;
+  } else {
     const today = new Date();
-    const monthStr = `${today.getFullYear()}-${pad2(today.getMonth()+1)}`;
+    monthStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
+  }
+
+  if (mi) {
     mi.value = monthStr;
     render(monthStr);
     mi.addEventListener('change', ()=> render(mi.value));
-  }else{
-    // Ja nav input, vismaz uzzīmē aktuālo mēnesi
-    const today = new Date();
-    render(`${today.getFullYear()}-${pad2(today.getMonth()+1)}`);
+  } else {
+    render(monthStr);
   }
+
   const pb = document.getElementById('printBtn');
-  if(pb) pb.addEventListener('click', ()=> window.print());
+  if (pb) pb.addEventListener('click', ()=> window.print());
 }
 
-init(); // <- BEZ ŠĪ nekas nesāksies
+init();
 
 })(); // IIFE — pareizi aizvērts ar () aiz } un ;
