@@ -490,6 +490,24 @@ nextMonthBtn.addEventListener('click', ()=>{
   renderMonth();
 });
 
+  
+// Meklējam jauno pogu
+const openPrintBtn = document.getElementById('openPrint');
+
+function openPrintForCurrentMonth(){
+  // Paņem mēnesi no currentMonthAnchor (jau eksistē tavā kodā)
+  const y  = currentMonthAnchor.getFullYear();
+  const mm = String(currentMonthAnchor.getMonth() + 1).padStart(2,'0');
+  const q  = `${y}-${mm}`;
+  // Atver print lapu ar mēneša parametru (lai uzreiz ir pareizais mēnesis)
+  window.open(`./print.html?month=${q}`, '_blank', 'noopener,noreferrer');
+}
+
+if (openPrintBtn) {
+  openPrintBtn.addEventListener('click', openPrintForCurrentMonth);
+}
+
+  
 function countWorkdaysInMonth(year, monthIndex){
   // monthIndex 0-11
   const start = new Date(year, monthIndex, 1);
