@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="lv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WorkLog – Drukas pārskats</title>
+  <link rel="stylesheet" href="./print.css" />
+</head>
+<body>
+  <div class="container no-print">
+    <div class="controls">
+      <label>Mēnesis: <input type="month" id="monthInput"></label>
+      <button id="printBtn">Drukāt PDF</button>
+    </div>
+    <div class="small">Piezīme: PDF izveidošanai netiek sūtīti nekādi dati. Viss notiek tikai tavā ierīcē (localStorage).</div>
+  </div>
+
+  <div class="container">
+    <div class="header" id="headerBlock">
+      <h1 id="headerTitle">—</h1>
+      <p id="headerLine1">—</p>
+      <p id="headerLine2">—</p>
+    </div>
+    <div class="section">
+      <table>
+        <thead>
+          <tr><th>Datums</th><th>Stundas</th><th>Darba apraksts</th></tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="./print.js"></script>
+</body>
+</html>
