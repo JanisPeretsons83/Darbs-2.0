@@ -5,9 +5,14 @@
 const lsKey = 'worklog.entries.v2';
 const settingsKey = 'worklog.settings.v2';
 const pad2 = n => String(n).padStart(2,'0');
+
 const escapeHtml = s => String(s||'')
-  .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
-  .replaceAll('"','&quot;').replaceAll("'",'&#39;');
+  .replaceAll('&','&amp;')
+  .replaceAll('<','&lt;')
+  .replaceAll('>','&gt;')
+  .replaceAll('"','&quot;')
+  .replaceAll("'",'&#39;');
+
 const fmtNumber = (n, d=1) => (Number(n)||0).toLocaleString('lv-LV', {minimumFractionDigits:d, maximumFractionDigits:d});
 const parseISO = iso => { const [y,m,d]=iso.split('-').map(Number); return new Date(y,m-1,d); };
 const localISO = d => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
@@ -36,10 +41,10 @@ function render(monthStr){
   const y0=y, m0=m-1;
 
   const start = new Date(y0, m0, 1);
-  const end = new Date(y0, m0+1, 0);
+  const end   = new Date(y0, m0+1, 0);
 
-  const monthName = start.toLocaleDateString('lv-LV',{month:'long'}); // "februāris"
-  const monthTitle = monthName.replace(/^./, ch => ch.toUpperCase());    // "Februāris"
+  const monthName  = start.toLocaleDateString('lv-LV',{month:'long'}); // "februāris"
+  const monthTitle = monthName.replace(/^./, ch => ch.toUpperCase());  // "Februāris"
 
   const workdays = countWorkdaysInMonth(y0,m0);
   const required = workdays * (Number(settings.threshold)||8);
@@ -58,8 +63,9 @@ function render(monthStr){
 
   // Rindas (tikai dienas ar ierakstiem)
   const byDay = {};
-  entries.filter(e=>{ const d=parseISO(e.date); return d.getFullYear()===y0 && d.getMonth()===m0; })
-         .forEach(e=>{ (byDay[e.date] ||= []).push(e); });
+  entries
+    .filter(e => { const d=parseISO(e.date); return d.getFullYear()===y0 && d.getMonth()===m0; })
+    .forEach(e => { (byDay[e.date] ||= []).push(e); });
 
   const days = Object.keys(byDay).sort();
   const tbody = document.getElementById('rows');
@@ -67,7 +73,8 @@ function render(monthStr){
 
   if(days.length===0){
     const tr=document.createElement('tr');
-    const td=document.createElement('td'); td.colSpan=3; td.className='empty'; td.textContent='Šim mēnesim nav ierakstu.'; tr.appendChild(td); tbody.appendChild(tr); return;
+    const td=document.createElement('td'); td.colSpan=3; td.className='empty'; td.textContent='Šim mēnesim nav ierakstu.';
+    tr.appendChild(td); tbody.appendChild(tr); return;
   }
 
   days.forEach(iso=>{
@@ -82,15 +89,17 @@ function render(monthStr){
     else { const thr=Number(settings.threshold)||8; if(h<thr) chipClass='chip-blue'; else if(Math.abs(h-thr)<1e-9) chipClass='chip-green'; else chipClass='chip-orange'; }
 
     const tr=document.createElement('tr');
-    tr.innerHTML = `<td class="cell-date"><strong>${dd}.${mm}</strong></td>
+    tr.innerHTML = `
+      <td class="cell-date"><strong>${dd}.${mm}</strong></td>
       <td class="cell-hours"><span class="chip ${chipClass}">${fmtNumber(h, 1)}h</span></td>
-      <td class="cell-activity">${acts}</td>`;
+      <td class="cell-activity">${acts}</td>
+    `;
     tbody.appendChild(tr);
   });
 }
 
 function tryExit(){
-  // Ja ir referrer no šīs pašas vietnes, ej atpakaļ, citādi uz index.html
+  // ja atnāci no tās pašas vietnes, ej atpakaļ; citādi uz index.html
   try{
     if (document.referrer) {
       const u = new URL(document.referrer);
@@ -100,14 +109,29 @@ function tryExit(){
   location.href = './index.html';
 }
 
+function openInSafari(){
+  // atver to pašu lapu Safari (ja esi PWA)
+  location.href = location.href;
+}
+
 function init(){
   const mi = document.getElementById('monthInput');
   const monthStr = getQueryMonth() || `${new Date().getFullYear()}-${pad2(new Date().getMonth()+1)}`;
   if(mi){ mi.value = monthStr; mi.addEventListener('change', ()=> render(mi.value)); }
   render(monthStr);
+
   const pb = document.getElementById('printBtn'); if(pb) pb.addEventListener('click', ()=> window.print());
   const xb = document.getElementById('exitBtn');  if(xb) xb.addEventListener('click', tryExit);
-  // Auto-iziet pēc drukas (ne visos iOS darbojas, bet nekaitē)
+
+  // Rādīt "Open in Safari" tikai PWA režīmā (Add to Home Screen)
+  const isPWA = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const ois = document.getElementById('openInSafariBtn');
+  if (isPWA && ois){
+    ois.hidden = false;
+    ois.addEventListener('click', openInSafari);
+  }
+
+  // Pēc drukas mēģinām atgriezties (ne visos iOS nostrādā, bet nekaitē)
   window.addEventListener('afterprint', ()=> setTimeout(tryExit, 100));
 }
 
