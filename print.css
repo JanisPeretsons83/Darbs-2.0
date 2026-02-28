@@ -5,10 +5,11 @@
 @media print { body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; } .no-print{ display:none !important; } }
 body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--fg); margin:0;}
 .container{ max-width:900px; margin:16px auto; padding:0 16px; }
-.controls{ display:flex; gap:12px; align-items:center; margin:0 0 12px 0; }
+.controls{ display:flex; gap:12px; align-items:center; margin:0 0 12px 0; flex-wrap:wrap; }
 .controls label{ color:var(--muted); font-size:14px; }
 .controls input[type=month]{ padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-size:14px; }
 .controls button{ padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:#2563eb; color:#fff; font-weight:700; }
+.controls button.secondary{ background:#6b7280; }
 .header{background:var(--panel); color:var(--panelText); border-radius:14px; padding:18px 20px; margin:0 0 14px 0;}
 .header h1{margin:0 0 6px 0; font-size:20pt; color:#0f172a;}
 .header p{margin:6px 0; color:#0f172a;}
