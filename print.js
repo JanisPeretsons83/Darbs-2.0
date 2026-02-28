@@ -110,9 +110,25 @@ function tryExit(){
 }
 
 function openInSafari(){
-  // atver to pašu lapu Safari (ja esi PWA)
-  location.href = location.href;
+  // mēģinām atvērt to pašu URL jaunā cilnē (tas iOS PWA gadījumā atvērs Safari)
+  const url = location.href;
+  let win = null;
+  try{
+    win = window.open(url, '_blank');
+  }catch(e){ /* turpinām ar fallback */ }
+
+// Fallback, ja window.open bloķēts
+  if(!win){
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
 }
+
 
 function init(){
   const mi = document.getElementById('monthInput');
@@ -123,17 +139,19 @@ function init(){
   const pb = document.getElementById('printBtn'); if(pb) pb.addEventListener('click', ()=> window.print());
   const xb = document.getElementById('exitBtn');  if(xb) xb.addEventListener('click', tryExit);
 
-  // Rādīt "Open in Safari" tikai PWA režīmā (Add to Home Screen)
-  const isPWA = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  
+// Rādīt “Atvērt Safari” tikai PWA režīmā (Add to Home Screen)
+  const isPWA = window.matchMedia('(display-mode: standalone)').matches
+             || window.navigator.standalone === true;
   const ois = document.getElementById('openInSafariBtn');
   if (isPWA && ois){
     ois.hidden = false;
-    ois.addEventListener('click', openInSafari);
+    ois.addEventListener('click', openInSafari, { passive:true });
   }
 
-  // Pēc drukas mēģinām atgriezties (ne visos iOS nostrādā, bet nekaitē)
   window.addEventListener('afterprint', ()=> setTimeout(tryExit, 100));
 }
 
 init();
+
 })();
