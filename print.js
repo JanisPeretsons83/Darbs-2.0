@@ -108,39 +108,51 @@ function render(monthStr){
   }
 
   // ===== Jaunais dizains katrai dienai (kā tavā bilžu paraugā) =====
-  days.forEach(iso=>{
-    const d = parseISO(iso);
-    const t = dayTotals(entries, iso, settings);
 
-    // "svētd., 01. marts"
-    const weekday  = d.toLocaleDateString('lv-LV', { weekday:'short' });
-    const dd       = String(d.getDate()).padStart(2,'0');
-    const month    = d.toLocaleDateString('lv-LV', { month:'long' });
-    const dayLabel = `${weekday}, ${dd}. ${month}`;
+days.forEach(iso=>{
+  const d = parseISO(iso);
+  const t = dayTotals(entries, iso, settings);  // ← izmanto to pašu loģiku, ko appā
+  const weekday  = d.toLocaleDateString('lv-LV', { weekday:'short' });
+  const dd       = String(d.getDate()).padStart(2,'0');
+  const month    = d.toLocaleDateString('lv-LV', { month:'long' });
+  const dayLabel = `${weekday}, ${dd}. ${month}`;
 
-    // Apvienotas aktivitātes (pēc izvēles)
-    const acts = byDay[iso]
-      .map(r => (r.activity || '').trim())
-      .filter(Boolean)
-      .map(a => escapeHtml(a))
-      .join('; ');
+  const acts = byDay[iso]
+    .map(r => (r.activity || '').trim())
+    .filter(Boolean)
+    .map(a => escapeHtml(a))
+    .join('; ');
 
-    const count = t.rows.length;
+  const count = t.rows.length;
 
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="daycell" colspan="3">
-        <div class="day-head"><strong>${dayLabel}</strong></div>
-        <div class="day-meta">
-          ${count} ieraksti · ${fmtNumber(t.hDay, 2)} h ·
-          Obligātās ${fmtNumber(t.normal, 2)} h · Virsst. ${fmtNumber(t.over, 2)} h
-        </div>
-        ${acts ? `<div class="day-acts">${acts}</div>` : ``}
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
+  // --- krāsas/izcelšanas klase pēc TAVAS loģikas ---
+  let totalClass = 'total-blue';
+  if (t.weekend || t.holiday) {
+    totalClass = (t.hDay > 0 ? 'total-orange' : 'total-gray');
+  } else {
+    const thr = Number(settings.threshold) || 8;
+    if (t.hDay <  thr) totalClass = 'total-blue';
+    else if (Math.abs(t.hDay - thr) < 1e-9) totalClass = 'total-green';
+    else totalClass = 'total-orange';
+  }
+
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="daycell" colspan="3">
+      <div class="day-head"><strong>${dayLabel}</strong></div>
+
+      <div class="day-meta">
+        ${count} ieraksti ·
+        <span class="total ${totalClass}">${fmtNumber(t.hDay, 2)} h</span> ·
+        Obligātās ${fmtNumber(t.normal, 2)} h ·
+        Virsst. ${fmtNumber(t.over, 2)} h
+      </div>
+
+      ${acts ? `<div class="day-acts">${acts}</div>` : ``}
+    </td>
+  `;
+  tbody.appendChild(tr);
+});
 
 // ===== Navigācija/drukas uzvedība =====
 function tryExit(){
