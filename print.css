@@ -39,12 +39,12 @@ td{font-size:6pt; line-height: 1.22; padding:3px 6px; vertical-align:middle;}
   margin: 0 0 2px 0;
 }
 .day-meta{
-  font-size: 4.5pt;
+  font-size: 5pt;
   color: var(--muted);
   margin: 0 0 2px 0;
 }
 .day-acts{
-  font-size: 4.5pt;
+  font-size: 5pt;
   color: #334155;
 }
 /* kompaktāks saraksts */
