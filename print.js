@@ -29,14 +29,27 @@ const isWeekend = iso => { const d=parseISO(iso); const g=d.getDay(); return g==
 const isHoliday = iso => lvHolidaySet(parseISO(iso).getFullYear()).has(iso);
 const isWorkday = iso => {const d=parseISO(iso); const dow=(d.getDay()+6)%7; return dow<=4 && !isHoliday(iso);} // Mon-Fri & not holiday
 
-function loadEntries(){ try{ return JSON.parse(localStorage.getItem(lsKey))||[]; }catch{ return []; } }
-function loadSettings(){ const def={ rate:0, rateOver:0, threshold:8 }; try{ return Object.assign(def, JSON.parse(localStorage.getItem(settingsKey))||{}); }catch{ return def; } }
+function dayTotals(entries, iso, settings){
+  const rows = entries.filter(e => e.date === iso);
+  const hDay = rows.reduce((s,r) => s + (Number(r.hours)||0), 0);
+  const thr  = rows[0]?.threshold ?? settings.threshold ?? 8;
 
-function countWorkdaysInMonth(y, mi){ const start=new Date(y,mi,1); const end=new Date(y,mi+1,0); let c=0; for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)){ if(isWorkday(localISO(d))) c++; } return c; }
-function dayHoursFor(entries, iso){ return entries.filter(e=>e.date===iso).reduce((s,e)=> s + (Number(e.hours)||0), 0); }
+  const weekend = isWeekend(iso);
+  const holiday = isHoliday(iso);
+  const workday = isWorkday(iso);
 
-// URL param: ?month=YYYY-MM
-function getQueryMonth(){ const m = new URLSearchParams(location.search).get('month'); return (/^\d{4}-\d{2}$/.test(m||'')) ? m : null; }
+  let normal=0, over=0;
+  if ((weekend || holiday) && hDay > 0){
+    // brīvdienās/svētku dienās visas stundas virsstundas
+    normal = 0; over = hDay;
+  } else if (workday){
+    normal = Math.min(hDay, thr);
+    over   = Math.max(0, hDay - thr);
+  } else {
+    normal = 0; over = hDay;
+  }
+  return { rows, hDay, normal, over };
+}
 
 function render(monthStr){
   const entries = loadEntries();
