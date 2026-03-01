@@ -10,60 +10,54 @@ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:
 .controls input[type=month]{ padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-size:14px; }
 .controls button{ padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:#2563eb; color:#fff; font-weight:700; }
 .controls button.secondary{ background:#6b7280; }
-.header{background:var(--panel); color:var(--panelText); border-radius:14px; padding:18px 20px; margin:0 0 14px 0;}
-.header h1{margin:0 0 6px 0; font-size:16pt; text-align:center; color:#0f172a;}
-.header p{margin: 4px 0; line-height: 1.25 text-align:center; color:#0f172a;}
+
+/* — Virsraksts (centrēts) — */
+.header{background:var(--panel); color:var(--panelText); border-radius:14px; padding:18px 20px; margin:0 0 10mm 0;}
+.header h1{margin:0 0 6px 0; font-size:20pt; color:#0f172a; text-align:center}
+.header p{margin:4px 0; color:#0f172a; text-align:center}
+
+/* — Saraksta konteiners — */
 .section{background:#dff7f7; border-radius:14px; padding:16px 18px;}
-table{width:100%; border-collapse:separate; border-spacing:0 2px;}
-th{color:#111827; text-align:left; line-height: 1.22; font-size:6pt; padding:3px 8px;}
-td{font-size:6pt; line-height: 1.22; padding:3px 6px; vertical-align:middle;}
-.cell-date{width:20%;}
-.cell-hours{width:15%;}
-.chip{display:inline-block; line-height: 1.1; padding:1px 8px; border-radius:999px; color:#111; font-weight:700; border:1px solid #bbb;}
-.chip-blue{background:#dbeafe; border-color:#bfdbfe;}
-.chip-green{background:#d1fae5; border-color:#a7f3d0;}
-.chip-orange{background:#fef3c7; border-color:#fde68a;}
-.chip-gray{background:#e5e7eb; border-color:#d1d5db;}
-.empty{text-align:center; color:var(--muted); padding:12px 8px;}
-.small{ font-size:12px; color:var(--muted); margin-top:8px; }
+.daylist{ column-count: 1; column-gap: 0; }
 
-
-.daycell{
-  padding: 3px 6px;
-  border-bottom: 1px dashed var(--border);
-}
-.day-head{
-  font-size: 6.5pt;
-  font-weight: 800;
-  color: #0f172a;
-  margin: 0 0 2px 0;
-}
-.day-meta{
-  font-size: 6.5pt;
-  color: var(--muted);
-  margin: 0 0 2px 0;
-}
-.day-acts{
-  font-size: 6.5pt;
-  color: #334155;
-}
-/* kompaktāks saraksts */
-.section table{ border-spacing: 0 2px; }
-.section table td{ padding: 3px 6px; line-height: 1.22; }
-
-/* --- Kopējo stundu akcentēšana (čipa stils) --- */
-.total{
-  display:inline-block;
-  font-weight:700;
-  padding: 4px 7px;
-  border-radius: 999px;
-  border: 1px solid #bbb;
-  line-height: 1.1;
+/* — PDF divām kolonnām (12mm atstarpe) — */
+.pdf-two-col{
+  column-count: 2;
+  column-gap: 12mm;
+  -webkit-column-count: 2;
+  -webkit-column-gap: 12mm;
+  column-fill: balance;
+  -webkit-column-fill: balance;
 }
 
-/* fonu krāsas (maigi) – kā appā */
+/* Dienas kartīte */
+.daycard{
+  break-inside: avoid;         /* modern */
+  page-break-inside: avoid;    /* legacy */
+  -webkit-column-break-inside: avoid; /* WebKit */
+  background: transparent;
+  padding: 8px 10px;
+  margin: 0 0 6mm 0;           /* vertikālā atstarpe starp kartītēm */
+  /* bez svītrām */
+}
+
+.day-head{ font-size:12.5pt; font-weight:800; color:#0f172a; margin:0 0 2px 0; }
+.day-meta{ font-size:10.5pt; color:var(--muted); margin:0 0 2px 0; }
+.day-acts{ font-size:10.5pt; color:#334155; }
+
+/* Kopējo stundu akcenti (teksta akcents; ja gribi čipu, nomaini zemāk) */
+.total{ font-weight:800; padding:0 2px; }
+.total-blue   { color:#0b3d91; }
+.total-green  { color:#059669; }
+.total-orange { color:#b45309; }
+.total-gray   { color:#6b7280; }
+
+/* Čipa stils (pēc izvēles – atkomentēt un aizstāt augšējo .total bloku)
+.total{ display:inline-block; font-weight:700; line-height:1.1; padding:2px 8px; border-radius:999px; border:1px solid #bbb; }
 .total-blue   { background:#dbeafe; border-color:#bfdbfe; color:#0b3d91; }
 .total-green  { background:#d1fae5; border-color:#a7f3d0; color:#065f46; }
 .total-orange { background:#fef3c7; border-color:#fde68a; color:#92400e; }
 .total-gray   { background:#e5e7eb; border-color:#d1d5db; color:#374151; }
+*/
 
+.small{ font-size:12px; color:var(--muted); margin-top:8px; }
