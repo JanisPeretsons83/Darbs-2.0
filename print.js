@@ -43,7 +43,7 @@ const lvHolidaySet = (y) => {
 };
 const isWeekend = iso => { const d=parseISO(iso); const g=d.getDay(); return g===0 || g===6; };
 const isHoliday = iso => lvHolidaySet(parseISO(iso).getFullYear()).has(iso);
-const isWorkday = iso => { const d=parseISO(iso); const dow=(d.getDay()+6)%7; return dow<=4 && !isHoliday(iso); }; // Mon–Fri
+const isWorkday = iso => { const d=parseISO(iso); const dow=(d.getDay()+6)%7; return dow<=4 && !isHoliday(iso); };
 
 // ===== Storage =====
 function loadEntries(){ try{ return JSON.parse(localStorage.getItem(lsKey))||[]; }catch{ return []; } }
@@ -119,25 +119,25 @@ function render(monthStr){
     .forEach(e => { (byDay[e.date] ||= []).push(e); });
 
   const days  = Object.keys(byDay).sort();
-  const tbody = document.getElementById('rows');
-  tbody.innerHTML = '';
+  const list = document.getElementById('rows');
+  list.innerHTML = '';
 
   if(days.length===0){
-    const tr=document.createElement('tr');
-    const td=document.createElement('td'); td.colSpan=3; td.className='empty';
-    td.textContent='Šim mēnesim nav ierakstu.';
-    tr.appendChild(td); tbody.appendChild(tr);
+    const empty=document.createElement('div');
+    empty.className='daycard';
+    empty.innerHTML = `<div class="day-meta">Šim mēnesim nav ierakstu.</div>`;
+    list.appendChild(empty);
     return;
   }
 
-  // Katras dienas bloks (kā tavā paraugā) + kopējā stundu izcelšana
+  // Katras dienas kartīte
   days.forEach(iso=>{
     const d = parseISO(iso);
     const t = dayTotals(entries, iso, settings);
 
-    const weekday  = d.toLocaleDateString('lv-LV', { weekday:'short' }); // “svētd.”
-    const dd       = String(d.getDate()).padStart(2,'0');                // “01”
-    const month    = d.toLocaleDateString('lv-LV', { month:'long' });    // “marts”
+    const weekday  = d.toLocaleDateString('lv-LV', { weekday:'short' });
+    const dd       = String(d.getDate()).padStart(2,'0');
+    const month    = d.toLocaleDateString('lv-LV', { month:'long' });
     const dayLabel = `${weekday}, ${dd}. ${month}`;
 
     const acts = byDay[iso]
@@ -148,7 +148,6 @@ function render(monthStr){
 
     const count = t.rows.length;
 
-    // Krāsu klase (tāda pati loģika kā appā)
     let totalClass = 'total-blue';
     if (t.weekend || t.holiday){
       totalClass = (t.hDay > 0 ? 'total-orange' : 'total-gray');
@@ -159,24 +158,21 @@ function render(monthStr){
       else    totalClass = 'total-orange';
     }
 
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="daycell" colspan="3">
-        <div class="day-head"><strong>${dayLabel}</strong></div>
-        <div class="day-meta">
-          ${count} ieraksti ·
-          <span class="total ${totalClass}">${fmtNumber(t.hDay, 2)} h</span> ·
-          Obligātās ${fmtNumber(t.normal, 2)} h ·
-          Virsst. ${fmtNumber(t.over, 2)} h
-        </div>
-        ${acts ? `<div class="day-acts">${acts}</div>` : ``}
-      </td>
+    const item = document.createElement('div');
+    item.className = 'daycard';
+    item.innerHTML = `
+      <div class="day-head"><strong>${dayLabel}</strong></div>
+      <div class="day-meta">
+        ${count} ieraksti · <span class="total ${totalClass}">${fmtNumber(t.hDay, 2)} h</span> ·
+        Obligātās ${fmtNumber(t.normal, 2)} h · Virsst. ${fmtNumber(t.over, 2)} h
+      </div>
+      ${acts ? `<div class="day-acts">${acts}</div>` : ``}
     `;
-    tbody.appendChild(tr);
+    list.appendChild(item);
   });
-} // <— render beigas
+}
 
-// ===== Navigācija / drukas uzvedība =====
+// ===== Navigācija / PDF =====
 function tryExit(){
   try{
     if (document.referrer) {
@@ -187,13 +183,42 @@ function tryExit(){
   location.href = './index.html';
 }
 
+async function downloadPdf(){
+  if (!window.html2pdf) { alert('Lejupielādei vajadzīgs html2pdf.bundle.min.js (skat. libs/)'); return; }
+  // Uzģenerējam atsevišķu konteineru PDFam ar 2 kolonnām un 12mm atstarpi
+  const container = document.createElement('div');
+  container.style.width = '794px'; /* ~A4 @96dpi */
+  container.className = 'pdf-two-col';
+  const header = document.querySelector('.header').cloneNode(true);
+  const list   = document.querySelector('.daylist').cloneNode(true);
+  // Klonētajā listā paliek kartītes – pietiek to pievienot
+  container.appendChild(header);
+  container.appendChild(list);
+  container.style.position='fixed'; container.style.left='-10000px';
+  document.body.appendChild(container);
+
+  const opt = {
+    margin: [10,10,10,10],
+    filename: buildPdfName(),
+    image: { type:'jpeg', quality:0.95 },
+    html2canvas: { scale: 2, useCORS: true, backgroundColor:'#ffffff' },
+    jsPDF: { unit:'mm', format:'a4', orientation:'portrait' }
+  };
+  try{ await html2pdf().from(container).set(opt).save(); }
+  finally{ container.remove(); }
+}
+function buildPdfName(){
+  const mi = document.getElementById('monthInput');
+  const m = mi && mi.value ? mi.value : new Date().toISOString().slice(0,7);
+  return `WorkLog-${m}.pdf`;
+}
+
 function openInSafari(){
   const url = location.href;
   let win = null;
   try{ win = window.open(url, '_blank'); }catch(e){}
   if(!win){
-    const a = document.createElement('a');
-    a.href = url; a.target = '_blank'; a.rel = 'noopener';
+    const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel='noopener';
     document.body.appendChild(a); a.click(); a.remove();
   }
 }
@@ -207,16 +232,11 @@ function init(){
   const pb = document.getElementById('printBtn'); if(pb) pb.addEventListener('click', ()=> window.print());
   const xb = document.getElementById('exitBtn');  if(xb) xb.addEventListener('click', tryExit);
 
-  // Rādīt “Atvērt Safari” tikai PWA režīmā (Add to Home Screen)
-  const isPWA = window.matchMedia('(display-mode: standalone)').matches
-             || window.navigator.standalone === true;
-  const ois = document.getElementById('openInSafariBtn');
-  if (isPWA && ois){
-    ois.hidden = false;
-    ois.addEventListener('click', openInSafari, { passive:true });
-  }
+  const dl = document.getElementById('downloadPdfBtn'); if (dl){ dl.addEventListener('click', downloadPdf, {passive:true}); }
 
-  window.addEventListener('afterprint', ()=> setTimeout(tryExit, 100));
+  const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const ois = document.getElementById('openInSafariBtn');
+  if (isPWA && ois){ ois.hidden = false; ois.addEventListener('click', openInSafari, { passive:true }); }
 }
 
 init();
