@@ -6,12 +6,16 @@ const lsKey = 'worklog.entries.v2';
 const settingsKey = 'worklog.settings.v2';
 const pad2 = n => String(n).padStart(2,'0');
 
-const escapeHtml = s => String(s||'')
-  .replaceAll('&','&amp;')
-  .replaceAll('<','&lt;')
-  .replaceAll('>','&gt;')
-  .replaceAll('"','&quot;')
-  .replaceAll("'",'&#39;');
+
+function escapeHtml(str){
+  return String(str)
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'",'&#39;');
+}
+
 
 const fmtNumber = (n, d=1) => (Number(n)||0).toLocaleString('lv-LV', {minimumFractionDigits:d, maximumFractionDigits:d});
 const parseISO = iso => { const [y,m,d]=iso.split('-').map(Number); return new Date(y,m-1,d); };
