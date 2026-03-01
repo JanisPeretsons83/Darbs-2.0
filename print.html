@@ -3,19 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>WorkLog – Drukas pārskats</title>
-  <link rel="stylesheet" href="./print.css?v=4" />
+  <title>WorkLog – Drukas pārskats (OFFLINE)</title>
+  <link rel="stylesheet" href="./print.css?v=4.1-offline" />
 </head>
 <body>
   <div class="container no-print">
     <div class="controls">
       <label>Mēnesis: <input type="month" id="monthInput"></label>
       <button id="downloadPdfBtn">Lejupielādēt PDF</button>
-      <button id="openInSafariBtn" class="secondary" hidden>Atvērt Safari</button>
-      <button id="printBtn" class="secondary">Drukāt (OS)</button>
       <button id="exitBtn" class="secondary">Iziet</button>
     </div>
-    <div class="small">Ja PDF no iPhone PWA parādās ar URL kājeni, lieto <strong>Lejupielādēt PDF</strong> (darbojas ar <code>libs/html2pdf.bundle.min.js</code>, bez OS Print dialoga).</div>
+    <div class="small">Šī OFFLINE versija izmanto tikai lokālo <code>libs/html2pdf.bundle.min.js</code>. Nav nekādu tīkla pieprasījumu.</div>
   </div>
 
   <div class="container">
@@ -30,7 +28,13 @@
     </div>
   </div>
 
+  <!-- Only local html2pdf (no CDN fallback) -->
   <script src="./libs/html2pdf.bundle.min.js"></script>
-  <script src="./print.js?v=4"></script>
+  <script>
+    if (typeof html2pdf === 'undefined') {
+      alert('html2pdf nav atrasts. Ievieto libs/html2pdf.bundle.min.js un pārlādē lapu.');
+    }
+  </script>
+  <script src="./print.js?v=4.1-offline"></script>
 </body>
 </html>
