@@ -77,11 +77,44 @@ function render(monthStr){
     tr.appendChild(td); tbody.appendChild(tr); return;
   }
 
-  days.forEach(iso=>{
-    const d = parseISO(iso);
-    const h = dayHoursFor(entries, iso);
-    const acts = byDay[iso].map(r=>r.activity).filter(a=>a && a.trim()!=='').map(a=>escapeHtml(a)).join('; ');
-    const dd = pad2(d.getDate()); const mm=pad2(d.getMonth()+1);
+  
+days.forEach(iso=>{
+  const d = parseISO(iso);
+
+  // Skaitļi pa dienu no TAVAS loģikas (būs tieši tādi paši kā index.html)
+  const t = dayTotals(entries, iso, settings);
+
+  // Teksts "svētd., 01. marts"
+  const weekday = d.toLocaleDateString('lv-LV', { weekday:'short' }); // "svētd."
+  const dd      = String(d.getDate()).padStart(2,'0');                // "01"
+  const month   = d.toLocaleDateString('lv-LV', { month:'long' });    // "marts"
+  const dayLabel = `${weekday}, ${dd}. ${month}`;
+
+  // Apvienotas aktivitātes (pēc izvēles)
+  const acts = byDay[iso]
+    .map(r => (r.activity || '').trim())
+    .filter(Boolean)
+    .map(a => escapeHtml(a))
+    .join('; ');
+
+  // Ierakstu skaits (tavā tekstā tiek lietots “ieraksti” arī vienskaitlim)
+  const count = t.rows.length;
+
+  // Izvadām vienu rindu ar vienu šūnu (kolonnu virsraksti nav vajadzīgi šim stilam)
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="daycell" colspan="3">
+      <div class="day-head"><strong>${dayLabel}</strong></div>
+      <div class="day-meta">
+        ${count} ieraksti · ${fmtNumber(t.hDay, 2)} h ·
+        Obligātās ${fmtNumber(t.normal, 2)} h · Virsst. ${fmtNumber(t.over, 2)} h
+      </div>
+      ${acts ? `<div class="day-acts">${acts}</div>` : ``}
+    </td>
+  `;
+  tbody.appendChild(tr);
+});
+
 
     // chip color
     let chipClass='chip-blue';
