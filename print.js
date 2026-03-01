@@ -57,8 +57,7 @@ function countWorkdaysInMonth(y, mi){
   return c;
 }
 function dayHoursFor(entries, iso){
-  return entries.filter(e=>e.date===iso)
-                .reduce((s,e)=> s + (Number(e.hours)||0), 0);
+  return entries.filter(e=>e.date===iso).reduce((s,e)=> s + (Number(e.hours)||0), 0);
 }
 
 // ===== dayTotals (saīsināta app loģika) =====
@@ -175,7 +174,7 @@ function render(monthStr){
     `;
     tbody.appendChild(tr);
   });
-} // <-- svarīgi: render ir aizvērts te!
+} // <— render beigas
 
 // ===== Navigācija / drukas uzvedība =====
 function tryExit(){
