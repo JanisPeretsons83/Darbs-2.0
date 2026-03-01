@@ -26,3 +26,25 @@ td{font-size:6pt; line-height: 1.22; padding:3px 6px; vertical-align:middle;}
 .chip-gray{background:#e5e7eb; border-color:#d1d5db;}
 .empty{text-align:center; color:var(--muted); padding:12px 8px;}
 .small{ font-size:12px; color:var(--muted); margin-top:8px; }
+
+.daycell{
+  padding: 10px 12px;
+  border-bottom: 1px dashed var(--border);
+  background: transparent;
+}
+.day-head{
+  font-size: 12.5pt;
+  font-weight: 800;    /* treknraksts virsrakstam */
+  color: #0f172a;
+  margin: 0 0 2px 0;
+}
+.day-meta{
+  font-size: 10.5pt;
+  color: var(--muted);
+  margin: 0 0 2px 0;
+}
+.day-acts{
+  font-size: 10.5pt;
+  color: #334155;
+}
+
