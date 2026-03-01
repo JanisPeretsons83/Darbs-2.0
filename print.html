@@ -4,16 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>WorkLog – Drukas pārskats</title>
-  <link rel="stylesheet" href="./print.css" />
+  <link rel="stylesheet" href="./print.css?v=4" />
 </head>
 <body>
   <div class="container no-print">
     <div class="controls">
       <label>Mēnesis: <input type="month" id="monthInput"></label>
-      <button id="printBtn">Izveidot PDF</button>
+      <button id="downloadPdfBtn">Lejupielādēt PDF</button>
+      <button id="openInSafariBtn" class="secondary" hidden>Atvērt Safari</button>
+      <button id="printBtn" class="secondary">Drukāt (OS)</button>
       <button id="exitBtn" class="secondary">Iziet</button>
     </div>
-    <div class="small">Piezīme: PDF izveidošanai netiek sūtīti nekādi dati. Viss notiek tikai tavā ierīcē (localStorage).</div>
+    <div class="small">Ja PDF no iPhone PWA parādās ar URL kājeni, lieto <strong>Lejupielādēt PDF</strong> (darbojas ar <code>libs/html2pdf.bundle.min.js</code>, bez OS Print dialoga).</div>
   </div>
 
   <div class="container">
@@ -22,16 +24,13 @@
       <p id="headerLine1">—</p>
       <p id="headerLine2">—</p>
     </div>
+
     <div class="section">
-      <table>
-        <!--<thead>
-          <tr><th>Datums</th><th>Stundas</th><th>Darba apraksts</th></tr>
-        </thead>-->
-        <tbody id="rows"></tbody>
-      </table>
+      <div id="rows" class="daylist"></div>
     </div>
   </div>
 
-  <script src="./print.js"></script>
+  <script src="./libs/html2pdf.bundle.min.js"></script>
+  <script src="./print.js?v=4"></script>
 </body>
 </html>
