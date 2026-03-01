@@ -51,3 +51,19 @@ td{font-size:6pt; line-height: 1.22; padding:3px 6px; vertical-align:middle;}
 .section table{ border-spacing: 0 2px; }
 .section table td{ padding: 3px 6px; line-height: 1.22; }
 
+/* --- Kopējo stundu akcentēšana (čipa stils) --- */
+.total{
+  display:inline-block;
+  font-weight:700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #bbb;
+  line-height: 1.1;
+}
+
+/* fonu krāsas (maigi) – kā appā */
+.total-blue   { background:#dbeafe; border-color:#bfdbfe; color:#0b3d91; }
+.total-green  { background:#d1fae5; border-color:#a7f3d0; color:#065f46; }
+.total-orange { background:#fef3c7; border-color:#fde68a; color:#92400e; }
+.total-gray   { background:#e5e7eb; border-color:#d1d5db; color:#374151; }
+
