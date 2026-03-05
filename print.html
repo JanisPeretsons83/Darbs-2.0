@@ -1,40 +1,37 @@
 <!doctype html>
 <html lang="lv">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>WorkLog – Drukas pārskats (OFFLINE)</title>
-  <link rel="stylesheet" href="./print.css?v=4.1-offline" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WorkLog – PDF drukas skats (v5.2)</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
+  <link rel="stylesheet" href="./print.css?v=5.2" />
 </head>
 <body>
   <div class="container no-print">
     <div class="controls">
-      <label>Mēnesis: <input type="month" id="monthInput"></label>
-      <button id="downloadPdfBtn">Lejupielādēt PDF</button>
+      <label>Mēnesis:
+        <input type="month" id="monthInput" />
+      </label>
+      <button id="printBtn">Drukāt / Saglabāt PDF</button>
       <button id="exitBtn" class="secondary">Iziet</button>
     </div>
-    <div class="small">Šī OFFLINE versija izmanto tikai lokālo <code>libs/html2pdf.bundle.min.js</code>. Nav nekādu tīkla pieprasījumu.</div>
+    <div class="small">
+      <strong>Bez bibliotēkām.</strong> Spied <em>Drukāt</em>
+    </div>
   </div>
 
   <div class="container">
     <div class="header" id="headerBlock">
       <h1 id="headerTitle">—</h1>
       <p id="headerLine1">—</p>
-      <p id="headerLine2">—</p>
     </div>
 
-    <div class="section">
-      <div id="rows" class="daylist"></div>
+    <div class="sheet">
+      <div id="rows" class="list single-col" aria-label="Dienu ierakstu saraksts"></div>
     </div>
   </div>
 
-  <!-- Only local html2pdf (no CDN fallback) -->
-  <script src="./libs/html2pdf.bundle.min.js"></script>
-  <script>
-    if (typeof html2pdf === 'undefined') {
-      alert('html2pdf nav atrasts. Ievieto libs/html2pdf.bundle.min.js un pārlādē lapu.');
-    }
-  </script>
-  <script src="./print.js?v=4.1-offline"></script>
+  <script src="./print.js?v=5.2"></script>
 </body>
 </html>
