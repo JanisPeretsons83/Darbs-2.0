@@ -1,63 +1,152 @@
 
-:root{ --fg:#1f2937; --muted:#4b5563; --panel:#cfe0ff; --panelText:#0b3d91; --list:#dff7f7; --border:#e5e7eb; }
-*{box-sizing:border-box}
-@page { size: A4; margin: 18mm; }
-@media print { body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; } .no-print{ display:none !important; } }
-body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--fg); margin:0;}
-.container{ max-width:900px; margin:16px auto; padding:0 16px; }
-.controls{ display:flex; gap:12px; align-items:center; margin:0 0 12px 0; flex-wrap:wrap; }
-.controls label{ color:var(--muted); font-size:14px; }
-.controls input[type=month]{ padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-size:14px; }
-.controls button{ padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:#2563eb; color:#fff; font-weight:700; }
-.controls button.secondary{ background:#6b7280; }
-
-/* — Virsraksts (centrēts) — */
-.header{background:var(--panel); color:var(--panelText); border-radius:14px; padding:18px 20px; margin:0 0 10mm 0;}
-.header h1{margin:0 0 6px 0; font-size:20pt; color:#0f172a; text-align:center}
-.header p{margin:4px 0; color:#0f172a; text-align:center}
-
-/* — Saraksta konteiners — */
-.section{background:#dff7f7; border-radius:14px; padding:16px 18px;}
-.daylist{ column-count: 1; column-gap: 0; }
-
-/* — PDF divām kolonnām (12mm atstarpe) — */
-.pdf-two-col{
-  column-count: 2;
-  column-gap: 12mm;
-  -webkit-column-count: 2;
-  -webkit-column-gap: 12mm;
-  column-fill: balance;
-  -webkit-column-fill: balance;
+:root{
+  --fg:#0f172a; --muted:#6b7280; --border:#e5e7eb; --accent:#0b3d91;
+  --wknd-bg:#fff7cc;         /* brīvdienām (gaiši dzeltena) */
+  --holi-bg:#ffe5e5;         /* svētku dienām (sārta) */
+  --page-margin-mm: 12mm;    /* vieta OS galvenei/kājenēm ar URL */
+  --row-min-mm: 7.0mm;       /* minimālais augstums (≈31 ieraksts/A4) */
 }
 
-/* Dienas kartīte */
-.daycard{
-  break-inside: avoid;         /* modern */
-  page-break-inside: avoid;    /* legacy */
-  -webkit-column-break-inside: avoid; /* WebKit */
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{ font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--fg); margin:0 }
+
+@page { size: A4; margin: var(--page-margin-mm) }
+@media print { body{ -webkit-print-color-adjust: exact; print-color-adjust: exact } .no-print{ display:none !important } }
+
+.container{ max-width:900px; margin:16px auto; padding:0 16px }
+.controls{ display:flex; gap:12px; align-items:center; margin:0 0 12px 0; flex-wrap:wrap }
+.controls label{ color:var(--muted); font-size:14px }
+.controls input[type=month]{ padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-size:14px }
+.controls button{ padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:#2563eb; color:#fff; font-weight:700 }
+.controls button.secondary{ background:#6b7280 }
+.small{ font-size:12px; color:var(--muted); margin-top:8px }
+
+.header{ background:#e8f0ff; color:#0b3d91; border-radius:12px; padding:10px 12px; margin:0 0 8px 0 }
+.header h1{ margin:0; font-size:16pt; text-align:center; color:#0f172a }
+.header p{ margin:2px 0 0 0; text-align:center; color:#0f172a; font-size:10pt }
+
+.sheet{ background:#f8fafc; border-radius:12px; padding:8px 10px }
+.list.single-col{ display:block }
+
+/* Kartīte */
+.entry{
+  min-height: var(--row-min-mm);
+  padding:4px 8px;
+  border-bottom:1px solid var(--border);
+  page-break-inside: avoid; break-inside: avoid;
+  display:block;
+}
+.entry:last-child{ border-bottom:none }
+.entry.holiday{ background: var(--holi-bg) }
+.entry.weekend:not(.holiday){ background: var(--wknd-bg) }
+
+/* Viena flex rinda ar wrap (ja nesaiet) */
+.row-top{
+  display:flex;
+  flex-wrap: wrap;          /* ļaujam 2. rindu */
+  align-items: baseline;
+  column-gap: 10px;
+  row-gap: 2px;
+  min-width: 0;
+}
+
+.date{
+  flex: 0 0 auto;
+  font-weight: 800;
+  font-size: 10.5pt;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+.badge{
+  flex: 0 0 auto;
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  font-size: 10pt; line-height: 1.2; font-weight: 700;
+}
+.badge.blue{   color:#0b3d91; background:#e0ecff; border-color:#bfdbfe }
+.badge.green{  color:#065f46; background:#d1fae5; border-color:#a7f3d0 }
+.badge.orange{ color:#92400e; background:#fde68a; border-color:#facc15 }
+.badge.gray{   color:#374151; background:#e5e7eb; border-color:#cbd5e1 }
+
+/* Darba apraksts – tumšs un svarīgs */
+.desc{
+  order: 3;
+  flex: 1 1 360px;          /* aizpilda vietu, drīkst iet 2. rindā */
+  min-width: 220px;
+  color: #0f172a;           /* tumšs */
+  font-weight: 600;
+  font-size: 10pt;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.desc:empty{ display:none }
+
+/* Obligātās/Virsst. – mazāk svarīgs, pelēks */
+.meta{
+  order: 4;
+  flex: 1 1 280px;
+  min-width: 160px;
+  color: #9aa0a6;
+  font-size: 9pt;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- Datuma "lente" tikai datumam --- */
+.date {
+  position: relative;
+  z-index: 0;
+}
+
+/* Dzeltena lente (brīvdienas) tikai datumam */
+.entry.weekend:not(.holiday) .date {
+  background: #fff3a0;       /* gaiši dzeltena */
+  border-radius: 6px;
+  padding: 0 6px;
+}
+
+/* Sarkana lente (svētku dienas) tikai datumam */
+.entry.holiday .date {
+  background: #ffd6d6;       /* gaiši sārta */
+  border-radius: 6px;
+  padding: 0 6px;
+}
+
+/* Lai NEbūtu vairs krāsota visa rinda */
+.entry.weekend:not(.holiday),
+.entry.holiday {
   background: transparent;
-  padding: 8px 10px;
-  margin: 0 0 6mm 0;           /* vertikālā atstarpe starp kartītēm */
-  /* bez svītrām */
+}
+/* Vienas rindas režīms */
+.row-top.one-line{
+  display:flex;
+  flex-wrap: nowrap;         /* << NAV wrap */
+  align-items: baseline;
+  column-gap: 10px;
+  min-width: 0;
 }
 
-.day-head{ font-size:12.5pt; font-weight:800; color:#0f172a; margin:0 0 2px 0; }
-.day-meta{ font-size:10.5pt; color:var(--muted); margin:0 0 2px 0; }
-.day-acts{ font-size:10.5pt; color:#334155; }
+/* Fiksētie bloki – nesaraujam */
+.date,
+.badge,
+.row-top.one-line > .meta{
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
 
-/* Kopējo stundu akcenti (teksta akcents; ja gribi čipu, nomaini zemāk) */
-.total{ font-weight:800; padding:0 2px; }
-.total-blue   { color:#0b3d91; }
-.total-green  { color:#059669; }
-.total-orange { color:#b45309; }
-.total-gray   { color:#6b7280; }
+/* Apraksts – aizņem atlikušo, saīsinās ar ellipsi */
 
-/* Čipa stils (pēc izvēles – atkomentēt un aizstāt augšējo .total bloku)
-.total{ display:inline-block; font-weight:700; line-height:1.1; padding:2px 8px; border-radius:999px; border:1px solid #bbb; }
-.total-blue   { background:#dbeafe; border-color:#bfdbfe; color:#0b3d91; }
-.total-green  { background:#d1fae5; border-color:#a7f3d0; color:#065f46; }
-.total-orange { background:#fef3c7; border-color:#fde68a; color:#92400e; }
-.total-gray   { background:#e5e7eb; border-color:#d1d5db; color:#374151; }
-*/
-
-.small{ font-size:12px; color:var(--muted); margin-top:8px; }
+/* Virsst. – aizstumjam līdz pašām labajām malām */
+.row-top.one-line > .meta{
+  flex: 0 0 auto;
+  white-space: nowrap;
+  margin-left: auto;          /* ← GALVENAIS: pastumj “Virsst.” pa labi */
+  /* optional: neliels vizuāls atstatums no apraksta */
+  padding-left: 8px;
+}
