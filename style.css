@@ -44,7 +44,26 @@ main{padding:12px;display:grid;gap:12px}
 .month-summary{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media(max-width:860px){.summary,.month-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.summary,.month-summary{grid-template-columns:1fr}}
-@media (max-width: 420px){.day-head .day-date{font-size: 12px;/* īpaši iPhone 16 Pro platumam */line-height: 1.2;}}
+/* === v2.2.2.1 mini-update: kompaktāks dienas datums un badge uz maziem ekrāniem === */
+/* Tikai mazajiem ekrāniem (iPhone u.c.) */
+@media (max-width: 420px){
+  /* Mazāks dienas datuma fonts kartītē + kompaktāks rindstarpa */
+  .day-head .day-date{
+    font-size: 12px;
+    line-height: 1.2; /* īpaši iPhone 16 Pro platumam */
+  }
+  /* Nedaudz mazāka badge, lai vizuāli saskan ar datuma izmēru */
+  .badge{
+    font-size: 11px;
+    padding: 2px 7px;
+  }
+}
+/* (Pēc izvēles) Elastīgs izmērs arī lielākiem ekrāniem — ja gribi, atkomentē.
+.day-head .day-date{
+  font-size: clamp(12px, 2.8vw, 14px);
+  line-height: 1.2;
+}
+*/
 .chip{background:var(--chip-bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
 .chip-label{font-size:12px;color:var(--muted)}
 .chip-value{font-size:18px;font-weight:800}
