@@ -1,68 +1,72 @@
-// service-worker.js  (uzlabota Tava versija)
+// service-worker.js — v20260308-7 (Navigation Preload + drošāks fetch)
 const PREFIX = 'worklog-cache-';
-const CACHE  = 'worklog-cache-20260308-6'; // ↑ palielini, kad maini frontend failus
+const CACHE  = 'worklog-cache-20260308-7'; // ↑ paceļ, kad maini frontend
 
-// Seko līdzi savām aktuālajām versijām (tās pašas, kas index.html <link> / <script>)
 const ASSETS = [
   './',
-  './index.html?v=20260308-6',
-  './style.css?v=20260308-6',
-  './worklog.js?v=20260308-6',
-  './manifest.json?v=20260308-6',
+  './index.html?v=20260308-7',
+  './style.css?v=20260308-7',
+  './worklog.js?v=20260308-7',
+  './manifest.json?v=20260308-7',
   './icons/worklog-192.png',
   './icons/worklog-512.png',
-  './offline.html' // ← pievieno nelielu fallback lapu
+  './offline.html'
 ];
 
-self.addEventListener('install', (e) => {
+self.addEventListener('install', (event) => {
   self.skipWaiting();
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(k => k.startsWith(PREFIX) && k !== CACHE)
-          .map(k => caches.delete(k))
-      )
-    )
-  );
-  self.clients.claim();
+self.addEventListener('activate', (event) => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys
+      .filter(k => k.startsWith(PREFIX) && k !== CACHE)
+      .map(k => caches.delete(k)));
+    // Navigation Preload = ātrāks sākums HTML navigācijām
+    if (self.registration.navigationPreload) {
+      await self.registration.navigationPreload.enable();
+    }
+    await self.clients.claim();
+  })());
 });
 
-// HTML pieprasījumiem — network-first ar offline fallback;
-// citiem resursiem — stale-while-revalidate.
-self.addEventListener('fetch', (e) => {
-  const req = e.request;
+// HTML → network-first ar navigation preload; statika → SWR;
+// tikai GET + same-origin kešojam.
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
+
   const accept = req.headers.get('accept') || '';
   const isHTML = accept.includes('text/html');
 
   if (isHTML) {
-    e.respondWith(
-      fetch(req)
-        .then(res => {
-          const copy = res.clone();
-          caches.open(CACHE).then(c => c.put(req, copy));
-          return res;
-        })
-        .catch(async () => (await caches.match(req)) || (await caches.match('./offline.html')))
-    );
+    event.respondWith((async () => {
+      try {
+        const pre = await event.preloadResponse;
+        if (pre) {
+          caches.open(CACHE).then(c => c.put(req, pre.clone()));
+          return pre;
+        }
+        const net = await fetch(req);
+        caches.open(CACHE).then(c => c.put(req, net.clone()));
+        return net;
+      } catch {
+        return (await caches.match(req)) || (await caches.match('./offline.html'));
+      }
+    })());
     return;
   }
 
   // Static: SWR
-  e.respondWith(
-    caches.match(req).then((cached) => {
-      const fetchPromise = fetch(req)
-        .then(res => {
-          const copy = res.clone();
-          caches.open(CACHE).then(c => c.put(req, copy));
-          return res;
-        })
-        .catch(() => cached);
-      return cached || fetchPromise;
-    })
-  );
+  event.respondWith((async () => {
+    const cached = await caches.match(req);
+    const promised = fetch(req)
+      .then(res => { caches.open(CACHE).then(c => c.put(req, res.clone())); return res; })
+      .catch(() => cached);
+    return cached || promised;
+  })());
 });
