@@ -1,8 +1,11 @@
+
 {
   "name": "WorkLog",
   "short_name": "WorkLog",
-  "start_url": "./index.html?v=20260214155642",
+  "start_url": "./index.html?v=20260308-6",
+  "scope": "./",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "background_color": "#E5E5E5",
   "theme_color": "#E5E5E5",
   "icons": [
