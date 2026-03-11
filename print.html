@@ -1,11 +1,12 @@
+
 <!doctype html>
 <html lang="lv">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WorkLog – mēnesis.gads</title>
+  <title>WorkLog – PDF drukas skats (oriģinālais, tabulas režīms)</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
-  <link rel="stylesheet" href="./print.css?v=5.2" />
+  <link rel="stylesheet" href="./print.css?v=tab3" />
 </head>
 <body>
   <div class="container no-print">
@@ -22,16 +23,25 @@
   </div>
 
   <div class="container">
-    <div class="header" id="headerBlock">
+    <div class="header header--grad-blue" id="headerBlock">
       <h1 id="headerTitle">—</h1>
       <p id="headerLine1">—</p>
     </div>
 
     <div class="sheet">
-      <div id="rows" class="list single-col" aria-label="Dienu ierakstu saraksts"></div>
+      <div class="table" role="table" aria-label="Dienu ierakstu tabula">
+        <div class="thead" role="rowgroup">
+          <div class="tr" role="row">
+            <div class="th col-date" role="columnheader">Datums</div>
+            <div class="th col-ko-ot" role="columnheader">Kopā · O/t</div>
+            <div class="th col-entries" role="columnheader">Ieraksti</div>
+          </div>
+        </div>
+        <div id="tbody" class="tbody" role="rowgroup"></div>
+      </div>
     </div>
   </div>
 
-  <script src="./print.js?v=5.2"></script>
+  <script src="./print.js?v=tab3"></script>
 </body>
 </html>
