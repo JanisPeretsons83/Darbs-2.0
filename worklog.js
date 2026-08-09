@@ -244,7 +244,7 @@ const overtimeThrEl=document.getElementById('overtimeThreshold');
 
 function renderSettings(){ const s=loadSettings(); rateDefaultEl.value=String(s.rate).replace('.',','); rateOverEl.value=String(s.rateOver??s.rate).replace('.',','); rateWeekendEl.value=(s.rateWeekend==null?'':String(s.rateWeekend).replace('.',',')); overtimeThrEl.value=String(s.threshold).replace('.',','); }
 settingsForm?.addEventListener('submit',(e)=>{ e.preventDefault(); const rate=parseNum(rateDefaultEl.value); const rateOver=parseNum(rateOverEl.value); const thr=parseNum(overtimeThrEl.value); const rateWeekend=rateWeekendEl.value.trim()===''?null:parseNum(rateWeekendEl.value); if(rate<=0||rateOver<=0||thr<=0) return alert('Pārbaudi iestatījumu vērtības'); if(rateWeekend!=null&&rateWeekend<=0) return alert('Brīvdienu likmei jābūt pozitīvai'); saveSettings({rate,rateOver,rateWeekend,threshold:thr}); renderWeek(); renderMonth(); });
-(function init(){ const s=loadSettings(); if(s.rateOver==null){ s.rateOver=s.rate; saveSettings(s); } const [mon]=weekBounds(new Date()); window.currentWeekAnchor=mon; window.currentMonthAnchor=new Date(new Date().getFullYear(), new Date().getMonth(), 1); renderSettings(); setActiveTab('week'); })();
+(function init(){ const s=loadSettings(); if(s.rateOver==null){ s.rateOver=s.rate; saveSettings(s); } const [mon]=weekBounds(new Date()); window.currentWeekAnchor=mon; window.currentMonthAnchor=new Date(new Date().getFullYear(), new Date().getMonth(), 1); renderSettings(); setActiveTab('today'); })();
 })();
 
 
