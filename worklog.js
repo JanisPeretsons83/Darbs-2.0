@@ -146,15 +146,9 @@ sheetEntries?.addEventListener('touchmove', (e) => {
   // Ja sākumā kustība pārsvarā ir vertikāla,
   // atdodam kontroli normālai scrollēšanai.
   if (!isSwiping) {
-    if (Math.abs(dy) > 20 && Math.abs(dy) > Math.abs(dx)) {
-      return;
-    }
-    if (Math.abs(dx) < 10) {
-      return;
-    }
-    isSwiping = true;
-    sheetEntries.classList.add('swiping');
-  }
+isSwiping = true;
+sheetEntries.classList.add('swiping');
+}
   if (!isSwiping) return;
   // Neliels "rubber band" efekts,
   // lai nevar aizvilkt bezgalīgi tālu.
