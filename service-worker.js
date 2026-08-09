@@ -1,6 +1,6 @@
 // service-worker.js — v20260308-7 (Navigation Preload + drošāks fetch)
 const PREFIX = 'worklog-cache-';
-const CACHE  = 'worklog-cache-20260308-7'; // ↑ paceļ, kad maini frontend
+const CACHE  = 'worklog-cache-20260308-8'; // ↑ paceļ, kad maini frontend
 
 const ASSETS = [
   './',
