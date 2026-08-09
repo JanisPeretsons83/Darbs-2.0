@@ -115,120 +115,84 @@ function fillDaySheet(iso){
   }
   sheetHours.value=''; sheetActivity.value='';
 }
-  
 // ===== SWIPE PA DIENĀM =====
-
 let swipeStartX = 0;
 let swipeStartY = 0;
 let swipeCurrentX = 0;
 let isSwiping = false;
 let swipeDirection = null;
-
 const SWIPE_TRIGGER = 80;
 const SWIPE_MAX_VERTICAL = 80;
-
 sheetEntries?.addEventListener('touchstart', (e) => {
   if (!e.touches.length || !selectedISO) return;
-
   swipeStartX = e.touches[0].clientX;
   swipeStartY = e.touches[0].clientY;
   swipeCurrentX = swipeStartX;
-
   isSwiping = false;
   swipeDirection = null;
-
   sheetEntries.classList.remove(
     'swiping',
     'swipe-settle',
     'swipe-reset'
   );
 }, { passive: true });
-
 sheetEntries?.addEventListener('touchmove', (e) => {
   if (!e.touches.length || !selectedISO) return;
-
   const x = e.touches[0].clientX;
   const y = e.touches[0].clientY;
   const dx = x - swipeStartX;
   const dy = y - swipeStartY;
-
   swipeCurrentX = x;
-
   // Ja sākumā kustība pārsvarā ir vertikāla,
   // atdodam kontroli normālai scrollēšanai.
   if (!isSwiping) {
-
     if (Math.abs(dy) > 20 && Math.abs(dy) > Math.abs(dx)) {
       return;
     }
-
     if (Math.abs(dx) < 10) {
       return;
     }
-
     isSwiping = true;
     sheetEntries.classList.add('swiping');
   }
-
   if (!isSwiping) return;
-
   // Neliels "rubber band" efekts,
   // lai nevar aizvilkt bezgalīgi tālu.
   const maxMove = window.innerWidth * 0.75;
-
   let moveX = dx;
-
   if (Math.abs(moveX) > maxMove) {
     moveX = Math.sign(moveX) *
       (maxMove + (Math.abs(moveX) - maxMove) * 0.2);
   }
-
   sheetEntries.style.transform = `translateX(${moveX}px)`;
-
   // Nedaudz pazūd, tuvojoties ekrāna malai
   const opacity = Math.max(
     0.45,
     1 - Math.abs(moveX) / window.innerWidth * 0.6
   );
-
   sheetEntries.style.opacity = opacity;
 }, { passive: true });
-
 sheetEntries?.addEventListener('touchend', () => {
   if (!isSwiping) return;
-
   const dx = swipeCurrentX - swipeStartX;
-
   const direction =
     dx < 0 ? 'next' : 'prev';
-
   const distance = Math.abs(dx);
-
   sheetEntries.classList.remove('swiping');
-
   // Pietiekami liels swipe → mainām dienu
   if (distance >= SWIPE_TRIGGER) {
-
     swipeDirection = direction;
-
     const screenWidth = window.innerWidth;
-
     const targetX =
       direction === 'next'
         ? -screenWidth
         : screenWidth;
-
     sheetEntries.classList.add('swipe-settle');
-
     sheetEntries.style.transform =
       `translateX(${targetX}px)`;
-
     sheetEntries.style.opacity = '0';
-
     setTimeout(() => {
-
       const currentDate = parseISO(selectedISO);
-
       if (direction === 'next') {
         // Pa kreisi → nākamā diena
         currentDate.setDate(
@@ -240,35 +204,20 @@ sheetEntries?.addEventListener('touchend', () => {
           currentDate.getDate() - 1
         );
       }
-
       selectedISO = localISO(currentDate);
-
       // Saglabājam virzienu,
       // lai jaunais saturs ienāktu no pareizās puses.
       const enterX =
         direction === 'next'
           ? screenWidth
           : -screenWidth;
-
       sheetEntries.style.transition = 'none';
       sheetEntries.style.transform =
         `translateX(${enterX}px)`;
-
       sheetEntries.style.opacity = '0';
-
       fillDaySheet(selectedISO);
-
       // Piespiežam pārlūku pielietot sākuma pozīciju
-      void sheetEntries.offsetWidth;
-
-      sheetEntries.style.transition =
-        'transform 0.22s ease-out, opacity 0.22s ease-out';
-
-      sheetEntries.style.transform =
-        'translateX(0)';
-
-      sheetEntries.style.opacity = '1';
-
+      void sheetEntries.offsetWidth; sheetEntries.style.transition = 'transform 0.22s ease-out, opacity 0.22s ease-out'; sheetEntries.style.transform = 'translateX(0)'; sheetEntries.style.opacity = '1';
       setTimeout(() => {
         sheetEntries.style.transition = '';
         sheetEntries.style.transform = '';
@@ -277,58 +226,40 @@ sheetEntries?.addEventListener('touchend', () => {
           'swipe-settle'
         );
       }, 230);
-
     }, 220);
-
   } else {
-
     // Pārāk mazs swipe →
     // saturs atgriežas sākumā.
     sheetEntries.classList.add('swipe-reset');
-
     sheetEntries.style.transform =
       'translateX(0)';
-
     sheetEntries.style.opacity = '1';
-
     setTimeout(() => {
       sheetEntries.classList.remove(
         'swipe-reset'
       );
-
       sheetEntries.style.transition = '';
       sheetEntries.style.transform = '';
       sheetEntries.style.opacity = '';
     }, 230);
   }
-
   isSwiping = false;
   swipeDirection = null;
-
 }, { passive: true });
-
-
 sheetEntries?.addEventListener('touchcancel', () => {
-
   if (!isSwiping) return;
-
   sheetEntries.classList.add('swipe-reset');
-
   sheetEntries.style.transform =
     'translateX(0)';
-
   sheetEntries.style.opacity = '1';
-
   setTimeout(() => {
     sheetEntries.classList.remove(
       'swipe-reset'
     );
-
     sheetEntries.style.transition = '';
     sheetEntries.style.transform = '';
     sheetEntries.style.opacity = '';
   }, 230);
-
   isSwiping = false;
   swipeDirection = null;
 });
@@ -408,20 +339,16 @@ renderMonth();
   
 function animateDayChange(direction) {
   if (!sheetEntries) return;
-
   // Noņem iepriekšējo animāciju
   sheetEntries.classList.remove('swipe-next', 'swipe-prev');
-
   // Piespiež pārlūkam pārreģistrēt animāciju
   void sheetEntries.offsetWidth;
-
   // Pievieno vajadzīgo animāciju
   if (direction === 'next') {
     sheetEntries.classList.add('swipe-next');
   } else {
     sheetEntries.classList.add('swipe-prev');
   }
-
   // Pēc animācijas notīra klasi
   setTimeout(() => {
     sheetEntries.classList.remove('swipe-next', 'swipe-prev');
