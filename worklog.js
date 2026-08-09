@@ -116,7 +116,7 @@ function fillDaySheet(iso){
   sheetHours.value=''; sheetActivity.value='';
 }
   
-// ===== ĪSTS SWIPE PA DIENĀM =====
+// ===== SWIPE PA DIENĀM =====
 
 let swipeStartX = 0;
 let swipeStartY = 0;
