@@ -24,6 +24,33 @@
   </header>
 
   <main>
+    <section id="todayTab" class="tabpanel active">
+      <div class="card">
+        <h2 id="todayTitle">Šodien</h2>
+      <div id="todayRows"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <input
+          id="todayHours"
+          type="text"
+          placeholder="stundas"
+          style="flex:1">
+        <input
+          id="todayActivity"
+          type="text"
+          placeholder="aktivitāte"
+          style="flex:3">
+      </div>
+      <div style="margin-top:12px">
+        <button id="todayAdd" class="primary">
+          Pievienot
+        </button>
+      </div>
+      <div style="margin-top:16px">
+        <strong>Nostrādāts šodien:</strong>
+        <span id="todayTotalHours">0,00 h</span>
+      </div>
+    </div>
+</section>
     <section id="weekTab" class="tabpanel active" role="tabpanel" aria-hidden="false">
       <div class="card">
         <div class="bar bar-week">
