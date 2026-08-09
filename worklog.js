@@ -72,6 +72,12 @@ document.getElementById('btnWeek')?.addEventListener('click', ()=> setActiveTab(
 document.getElementById('btnMonth')?.addEventListener('click', ()=> setActiveTab('month'));
 document.getElementById('btnSettings')?.addEventListener('click', ()=> setActiveTab('settings'));
 
+const todayRowsEl = document.getElementById('todayRows');
+const todayTitleEl = document.getElementById('todayTitle');
+const todayHoursEl = document.getElementById('todayHours');
+const todayActivityEl = document.getElementById('todayActivity');
+const todayAddBtn = document.getElementById('todayAdd');
+const todayTotalHoursEl = document.getElementById('todayTotalHours');
 // ===== Sheet =====
 const scrim=document.getElementById('scrim');
 const sheet=document.getElementById('daySheet');
@@ -132,6 +138,58 @@ const rightColEl=document.getElementById('weekColRight');
 prevWeekBtn?.addEventListener('click', ()=>{ const [mon]=weekBounds(new Date(currentWeekAnchor)); mon.setDate(mon.getDate()-7); currentWeekAnchor=mon; renderWeek(); });
 nextWeekBtn?.addEventListener('click', ()=>{ const [mon]=weekBounds(new Date(currentWeekAnchor)); mon.setDate(mon.getDate()+7); currentWeekAnchor=mon; renderWeek(); });
 
+function renderToday(){
+  if(!todayRowsEl) return;
+    const entries = loadEntries();
+    const settings = loadSettings();
+    const iso = localISO(new Date());
+    const t = dayTotals(entries, iso, settings);
+    const d = new Date();
+      todayTitleEl.textContent =
+      d.toLocaleDateString('lv-LV',{
+        weekday:'long',
+        day:'2-digit',
+        month:'long'
+      });
+      todayRowsEl.innerHTML = '';
+      t.rows.forEach(r => {
+    const row = document.createElement('div');
+      row.className = 'entry';
+      row.innerHTML = `
+      <div class="entry-line">
+      <strong>${fmtNumber(r.hours,2)} h</strong>
+      ${escapeHtml(r.activity || '')}
+      </div>
+      `;
+      todayRowsEl.appendChild(row);
+      });
+      todayTotalHoursEl.textContent =
+      `${fmtNumber(t.hDay,2)} h`;
+}
+todayAddBtn?.addEventListener('click', () => {
+const hh = parseNum(todayHoursEl.value);
+if(hh <= 0){
+alert('Ievadi derīgas stundas');
+return;
+}
+const settings = loadSettings();
+addEntry({
+id: 'e_'+Date.now()+'_'+Math.random().toString(36).slice(2),
+date: localISO(new Date()),
+hours: hh,
+activity: (todayActivityEl.value || '').trim(),
+rate: Number(settings.rate)||0,
+rateOver: Number(settings.rateOver ?? settings.rate)||0,
+rateWeekend: Number(settings.rateWeekend ?? settings.rateOver ?? settings.rate)||0,
+threshold: Number(settings.threshold)||8
+});
+todayHoursEl.value = '';
+todayActivityEl.value = '';
+renderToday();
+renderWeek();
+renderMonth();
+});
+  
 function renderWeek(){
   const entries=loadEntries(); const settings=loadSettings(); const [ws,we]=weekBounds(currentWeekAnchor);
   weekNoEl.textContent=isoWeekNumber(ws); weekRangeEl.textContent=formatRange(ws,we);
@@ -186,63 +244,7 @@ const overtimeThrEl=document.getElementById('overtimeThreshold');
 
 function renderSettings(){ const s=loadSettings(); rateDefaultEl.value=String(s.rate).replace('.',','); rateOverEl.value=String(s.rateOver??s.rate).replace('.',','); rateWeekendEl.value=(s.rateWeekend==null?'':String(s.rateWeekend).replace('.',',')); overtimeThrEl.value=String(s.threshold).replace('.',','); }
 settingsForm?.addEventListener('submit',(e)=>{ e.preventDefault(); const rate=parseNum(rateDefaultEl.value); const rateOver=parseNum(rateOverEl.value); const thr=parseNum(overtimeThrEl.value); const rateWeekend=rateWeekendEl.value.trim()===''?null:parseNum(rateWeekendEl.value); if(rate<=0||rateOver<=0||thr<=0) return alert('Pārbaudi iestatījumu vērtības'); if(rateWeekend!=null&&rateWeekend<=0) return alert('Brīvdienu likmei jābūt pozitīvai'); saveSettings({rate,rateOver,rateWeekend,threshold:thr}); renderWeek(); renderMonth(); });
-  const todayRowsEl = document.getElementById('todayRows');
-  const todayTitleEl = document.getElementById('todayTitle');
-  const todayHoursEl = document.getElementById('todayHours');
-  const todayActivityEl = document.getElementById('todayActivity');
-  const todayAddBtn = document.getElementById('todayAdd');
-  const todayTotalHoursEl = document.getElementById('todayTotalHours');
 (function init(){ const s=loadSettings(); if(s.rateOver==null){ s.rateOver=s.rate; saveSettings(s); } const [mon]=weekBounds(new Date()); window.currentWeekAnchor=mon; window.currentMonthAnchor=new Date(new Date().getFullYear(), new Date().getMonth(), 1); renderSettings(); setActiveTab('week'); })();
 })();
 
-function renderToday(){
-  if(!todayRowsEl) return;
-    const entries = loadEntries();
-    const settings = loadSettings();
-    const iso = localISO(new Date());
-    const t = dayTotals(entries, iso, settings);
-    const d = new Date();
-      todayTitleEl.textContent =
-      d.toLocaleDateString('lv-LV',{
-        weekday:'long',
-        day:'2-digit',
-        month:'long'
-      });
-      todayRowsEl.innerHTML = '';
-      t.rows.forEach(r => {
-    const row = document.createElement('div');
-      row.className = 'entry';
-      row.innerHTML = `
-      <div class="entry-line">
-      <strong>${fmtNumber(r.hours,2)} h</strong>
-      ${escapeHtml(r.activity || '')}
-      </div>
-      `;
-      todayRowsEl.appendChild(row);
-      });
-      todayTotalHoursEl.textContent =
-      `${fmtNumber(t.hDay,2)} h`;
-}
-todayAddBtn?.addEventListener('click', () => {
-const hh = parseNum(todayHoursEl.value);
-if(hh <= 0){
-alert('Ievadi derīgas stundas');
-return;
-}
-const settings = loadSettings();
-addEntry({
-id: 'e_'+Date.now()+'_'+Math.random().toString(36).slice(2),
-date: localISO(new Date()),
-hours: hh,
-activity: (todayActivityEl.value || '').trim(),
-rate: Number(settings.rate)||0,
-rateOver: Number(settings.rateOver ?? settings.rate)||0,
-rateWeekend: Number(settings.rateWeekend ?? settings.rateOver ?? settings.rate)||0,
-threshold: Number(settings.threshold)||8
-});
-todayHoursEl.value = '';
-todayActivityEl.value = '';
-renderToday();
-renderWeek();
-renderMonth();
-});
+
