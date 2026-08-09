@@ -92,6 +92,21 @@ main{padding:12px;display:grid;gap:12px}
 .month-row .right{text-align:right;min-width:120px}
 .month-grid-2x2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 
+/* ===== SWIPE PA DIENĀM ===== */
+#sheetEntries {
+  will-change: transform, opacity;
+  touch-action: pan-y;
+}
+#sheetEntries.swiping {
+  transition: none !important;
+}
+#sheetEntries.swipe-settle {
+  transition: transform 0.22s ease-out, opacity 0.22s ease-out;
+}
+#sheetEntries.swipe-reset {
+  transition: transform 0.22s ease-out, opacity 0.22s ease-out;
+}
+
 /* ===== Modern sheet ===== */
 .scrim{ position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:30; backdrop-filter:saturate(120%) blur(2px) }
 .sheet{ position:fixed; left:0; right:0; bottom:0; z-index:31; background:var(--card); border-top-left-radius:16px; border-top-right-radius:16px; max-height:80vh; transform:translateY(100%); transition:transform .22s ease; box-shadow:0 -10px 30px rgba(0,0,0,.15); border:1px solid var(--border); padding:0 }
