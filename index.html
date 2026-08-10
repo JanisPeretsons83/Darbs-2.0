@@ -29,7 +29,11 @@
   <main>
     <section id="todayTab" class="tabpanel active">
       <div class="card">
-        <h2 id="todayTitle">Šodien</h2>
+        <div class="today-nav">
+          <button id="prevDayBtn" class="navbtn">◀</button>
+            <h2 id="todayTitle">Šodien</h2>
+          <button id="nextDayBtn" class="navbtn">▶</button>
+        </div>
       <div id="todayRows"></div>
       <div style="display:flex;gap:8px;margin-top:12px">
         <input
