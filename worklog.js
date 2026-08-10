@@ -66,8 +66,7 @@ function setActiveTab(name){
   if(name==='month') renderMonth();
   if(name==='settings') renderSettings();
 }
-
-document.getElementById('homeBtn')?.addEventListener('click', ()=> setActiveTab('today'));
+document.getElementById('btnHome')?.addEventListener('click', () => setActiveTab('today'));
 document.getElementById('btnWeek')?.addEventListener('click', ()=> setActiveTab('week'));
 document.getElementById('btnMonth')?.addEventListener('click', ()=> setActiveTab('month'));
 document.getElementById('btnSettings')?.addEventListener('click', ()=> setActiveTab('settings'));
