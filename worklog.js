@@ -122,7 +122,7 @@ function fillDaySheet(iso){
   let isSwiping = false;
   let swipeDirection = null;
 const SWIPE_TRIGGER = 80;
-sheet?.addEventListener('touchstart', (e) => {
+sheetEntries?.addEventListener('touchstart', (e) => {
 alert('touchstart');
 if (!e.touches.length || !selectedISO) return;
   if (!e.touches.length || !selectedISO) return;
@@ -133,7 +133,7 @@ if (!e.touches.length || !selectedISO) return;
   swipeDirection = null;
   sheetEntries.classList.remove('swiping', 'swipe-settle', 'swipe-reset');
 }, { passive: true });
-sheet?.addEventListener('touchmove', (e) => {
+sheetEntries?.addEventListener('touchmove', (e) => {
 if (!e.touches.length || !selectedISO) return;
 const x = e.touches[0].clientX;
 const y = e.touches[0].clientY;
@@ -166,7 +166,7 @@ sheetEntries.style.opacity = Math.max(
 1 - Math.abs(moveX) / window.innerWidth * 0.6
 );
 }, { passive: false });
-sheet?.addEventListener('touchend', () => {
+sheetEntries?.addEventListener('touchend', () => {
   if (!isSwiping) return;
   const dx = swipeCurrentX - swipeStartX;
   const direction =
@@ -240,7 +240,7 @@ sheet?.addEventListener('touchend', () => {
   isSwiping = false;
   swipeDirection = null;
 }, { passive: true });
-sheet?.addEventListener('touchcancel', () => {
+sheetEntries?.addEventListener('touchcancel', () => {
   if (!isSwiping) return;
   sheetEntries.classList.add('swipe-reset');
   sheetEntries.style.transform =
