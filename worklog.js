@@ -193,7 +193,21 @@ threshold: Number(settings.threshold) || 8
 todayHoursEl.value = '';
 todayActivityEl.value = '';
 renderToday(currentTodayDate);
-}
+});
+ document.getElementById('prevDayBtn')
+?.addEventListener('click', () => {
+currentTodayDate.setDate(
+currentTodayDate.getDate() - 1
+);
+renderToday(currentTodayDate);
+});
+document.getElementById('nextDayBtn')
+?.addEventListener('click', () => {
+currentTodayDate.setDate(
+currentTodayDate.getDate() + 1
+);
+renderToday(currentTodayDate);
+}); 
 function renderWeek(){
   const entries=loadEntries(); const settings=loadSettings(); const [ws,we]=weekBounds(currentWeekAnchor);
   weekNoEl.textContent=isoWeekNumber(ws); weekRangeEl.textContent=formatRange(ws,we);
