@@ -131,37 +131,39 @@ sheetEntries?.addEventListener('touchstart', (e) => {
   swipeDirection = null;
   sheetEntries.classList.remove('swiping', 'swipe-settle', 'swipe-reset');
 }, { passive: true });
-
 sheetEntries?.addEventListener('touchmove', (e) => {
-  if (!e.touches.length || !selectedISO) return;
-  const x = e.touches[0].clientX;
-  const y = e.touches[0].clientY;
-  const dx = x - swipeStartX;
-  const dy = y - swipeStartY;
-  swipeCurrentX = x;
-  // Ja sākumā kustība pārsvarā ir vertikāla,
-  // atdodam kontroli normālai scrollēšanai.
-  if (!isSwiping) {
+if (!e.touches.length || !selectedISO) return;
+const x = e.touches[0].clientX;
+const y = e.touches[0].clientY;
+const dx = x - swipeStartX;
+const dy = y - swipeStartY;
+swipeCurrentX = x;
+if (!isSwiping) {
+const absDx = Math.abs(dx);
+const absDy = Math.abs(dy);
+// sākam swipe tikai tad,
+// ja kustība ir horizontāla
+if (absDx > absDy && absDx > 10) {
 isSwiping = true;
 sheetEntries.classList.add('swiping');
+} else {
+return;
 }
-  if (!isSwiping) return;
-  // Neliels "rubber band" efekts,
-  // lai nevar aizvilkt bezgalīgi tālu.
-  const maxMove = window.innerWidth * 0.75;
-  let moveX = dx;
-  if (Math.abs(moveX) > maxMove) {
-    moveX = Math.sign(moveX) *
-      (maxMove + (Math.abs(moveX) - maxMove) * 0.2);
-  }
-  sheetEntries.style.transform = `translateX(${moveX}px)`;
-  // Nedaudz pazūd, tuvojoties ekrāna malai
-  const opacity = Math.max(
-    0.45,
-    1 - Math.abs(moveX) / window.innerWidth * 0.6
-  );
-  sheetEntries.style.opacity = opacity;
-}, { passive: true });
+}
+e.preventDefault();
+const maxMove = window.innerWidth * 0.75;
+let moveX = dx;
+if (Math.abs(moveX) > maxMove) {
+moveX =
+Math.sign(moveX) *
+(maxMove + (Math.abs(moveX) - maxMove) * 0.2);
+}
+sheetEntries.style.transform = `translateX(${moveX}px)`;
+sheetEntries.style.opacity = Math.max(
+0.45,
+1 - Math.abs(moveX) / window.innerWidth * 0.6
+);
+}, { passive: false });
 sheetEntries?.addEventListener('touchend', () => {
   if (!isSwiping) return;
   const dx = swipeCurrentX - swipeStartX;
