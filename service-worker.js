@@ -1,6 +1,6 @@
-// service-worker.js — v20260908-18
+// service-worker.js — v20260908-20
 
-const VERSION = '20260908-18';
+const VERSION = '20260908-20';
 const PREFIX  = 'worklog-cache-';
 const CACHE   = `${PREFIX}${VERSION}`;
 
