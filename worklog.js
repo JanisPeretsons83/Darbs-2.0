@@ -116,13 +116,12 @@ function fillDaySheet(iso){
   sheetHours.value=''; sheetActivity.value='';
 }
 // ===== SWIPE PA DIENĀM =====
-let swipeStartX = 0;
-let swipeStartY = 0;
-let swipeCurrentX = 0;
-let isSwiping = false;
-let swipeDirection = null;
+  let swipeStartX = 0;
+  let swipeStartY = 0;
+  let swipeCurrentX = 0;
+  let isSwiping = false;
+  let swipeDirection = null;
 const SWIPE_TRIGGER = 80;
-const SWIPE_MAX_VERTICAL = 80;
 sheetEntries?.addEventListener('touchstart', (e) => {
   if (!e.touches.length || !selectedISO) return;
   swipeStartX = e.touches[0].clientX;
@@ -130,12 +129,9 @@ sheetEntries?.addEventListener('touchstart', (e) => {
   swipeCurrentX = swipeStartX;
   isSwiping = false;
   swipeDirection = null;
-  sheetEntries.classList.remove(
-    'swiping',
-    'swipe-settle',
-    'swipe-reset'
-  );
+  sheetEntries.classList.remove('swiping', 'swipe-settle', 'swipe-reset');
 }, { passive: true });
+
 sheetEntries?.addEventListener('touchmove', (e) => {
   if (!e.touches.length || !selectedISO) return;
   const x = e.touches[0].clientX;
@@ -280,7 +276,7 @@ prevWeekBtn?.addEventListener('click', ()=>{ const [mon]=weekBounds(new Date(cur
 nextWeekBtn?.addEventListener('click', ()=>{ const [mon]=weekBounds(new Date(currentWeekAnchor)); mon.setDate(mon.getDate()+7); currentWeekAnchor=mon; renderWeek(); });
 
 function renderToday(){
-  if(!todayRowsEl) return;
+  if(!todayRowsEl || !todayTitleEl || !todayTotalHoursEl) return;
     const entries = loadEntries();
     const settings = loadSettings();
     const iso = localISO(new Date());
@@ -402,7 +398,7 @@ const overtimeThrEl=document.getElementById('overtimeThreshold');
 
 function renderSettings(){ const s=loadSettings(); rateDefaultEl.value=String(s.rate).replace('.',','); rateOverEl.value=String(s.rateOver??s.rate).replace('.',','); rateWeekendEl.value=(s.rateWeekend==null?'':String(s.rateWeekend).replace('.',',')); overtimeThrEl.value=String(s.threshold).replace('.',','); }
 settingsForm?.addEventListener('submit',(e)=>{ e.preventDefault(); const rate=parseNum(rateDefaultEl.value); const rateOver=parseNum(rateOverEl.value); const thr=parseNum(overtimeThrEl.value); const rateWeekend=rateWeekendEl.value.trim()===''?null:parseNum(rateWeekendEl.value); if(rate<=0||rateOver<=0||thr<=0) return alert('Pārbaudi iestatījumu vērtības'); if(rateWeekend!=null&&rateWeekend<=0) return alert('Brīvdienu likmei jābūt pozitīvai'); saveSettings({rate,rateOver,rateWeekend,threshold:thr}); renderWeek(); renderMonth(); });
-(function init(){ const s=loadSettings(); if(s.rateOver==null){ s.rateOver=s.rate; saveSettings(s); } const [mon]=weekBounds(new Date()); window.currentWeekAnchor=mon; window.currentMonthAnchor=new Date(new Date().getFullYear(), new Date().getMonth(), 1); renderSettings(); setActiveTab('today'); })();
+(function init(){ const s=loadSettings(); if(s.rateOver==null){ s.rateOver=s.rate; saveSettings(s); } const [mon]=weekBounds(new Date()); currentWeekAnchor=mon; currentMonthAnchor=new Date(new Date().getFullYear(), new Date().getMonth(), 1); renderSettings(); setActiveTab('today'); })();
 })();
 
 
